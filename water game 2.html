@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hydration Hero 🥤🐾</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --energy: #22c55e;
+      --warning: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 28px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .header {
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    .pet-display {
+      text-align: center;
+      padding: 16px 0;
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+    }
+
+    .pet-avatar {
+      font-size: 3.5rem;
+      margin-bottom: 8px;
+      transition: transform 0.2s ease;
+    }
+
+    .pet-avatar.bounce {
+      transform: scale(1.2);
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar-container {
+      background: #334155;
+      height: 14px;
+      border-radius: 7px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .energy-bar {
+      background: var(--energy);
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+
+    .log-box {
+      background: #0f172a;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.85rem;
+      min-height: 50px;
+      max-height: 80px;
+      overflow-y: auto;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button {
+      background-color: var(--accent);
+      color: #0f172a;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background-color: var(--accent-hover);
+      color: #fff;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button.secondary {
+      background-color: #334155;
+      color: var(--text);
+    }
+
+    button.secondary:hover {
+      background-color: #475569;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="header">
+      <h1>Hydration Hero 🥤</h1>
+      <p id="pet-title" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Meet your hydration pet!</p>
+    </div>
+
+    <div class="pet-display">
+      <div id="pet-avatar" class="pet-avatar">🐱</div>
+      <h2 id="pet-name-display">Hydro</h2>
+      <p id="level-display" style="font-size: 0.85rem; color: var(--accent);">Level 1 Companion</p>
+    </div>
+
+    <div>
+      <div class="stats-row">
+        <span>💧 Daily Water</span>
+        <span id="water-text">0 / 2000 ml (0%)</span>
+      </div>
+      <div class="progress-bar-container">
+        <div id="water-bar" class="progress-bar"></div>
+      </div>
+
+      <div class="stats-row">
+        <span>⚡ Pet Energy</span>
+        <span id="energy-text">100%</span>
+      </div>
+      <div class="progress-bar-container">
+        <div id="energy-bar" class="progress-bar energy-bar" style="width: 100%;"></div>
+      </div>
+
+      <div class="stats-row" style="margin-top: 8px;">
+        <span>🔥 Current Streak</span>
+        <span id="streak-text" style="color: #fbbf24; font-weight: 600;">0 days</span>
+      </div>
+    </div>
+
+    <div id="log-box" class="log-box">
+      Welcome! Log water intake to keep your pet energetic and healthy.
+    </div>
+
+    <div class="btn-grid">
+      <button onclick="drinkWater(250)">+250 ml 🥤</button>
+      <button onclick="drinkWater(500)">+500 ml 💧</button>
+      <button class="secondary" onclick="passTime()">Wait (Pass Time) ⏳</button>
+      <button class="secondary" onclick="resetDay()">New Day 🌅</button>
+    </div>
+  </div>
+
+  <script>
+    // Game State
+    let petName = prompt("Name your hydration pet:", "Hydro") || "Hydro";
+    let level = 1;
+    let streak = 0;
+    let petEnergy = 100;
+    let currentWater = 0;
+    const dailyGoal = 2000;
+
+    // Elements
+    const petNameDisplay = document.getElementById("pet-name-display");
+    const levelDisplay = document.getElementById("level-display");
+    const waterText = document.getElementById("water-text");
+    const waterBar = document.getElementById("water-bar");
+    const energyText = document.getElementById("energy-text");
+    const energyBar = document.getElementById("energy-bar");
+    const streakText = document.getElementById("streak-text");
+    const logBox = document.getElementById("log-box");
+    const petAvatar = document.getElementById("pet-avatar");
+
+    petNameDisplay.innerText = petName;
+
+    function triggerBounce() {
+      petAvatar.classList.add("bounce");
+      setTimeout(() => petAvatar.classList.remove("bounce"), 200);
+    }
+
+    function updateUI() {
+      // Water Calculation
+      const percent = Math.min(100, Math.round((currentWater / dailyGoal) * 100));
+      waterText.innerText = `${currentWater} / ${dailyGoal} ml (${percent}%)`;
+      waterBar.style.width = `${percent}%`;
+
+      // Energy Calculation
+      energyText.innerText = `${petEnergy}%`;
+      energyBar.style.width = `${petEnergy}%`;
+      energyBar.style.background = petEnergy <= 25 ? "var(--warning)" : "var(--energy)";
+
+      // Pet Face based on status
+      if (petEnergy <= 0) {
+        petAvatar.innerText = "😵";
+      } else if (petEnergy <= 30) {
+        petAvatar.innerText = "🥺";
+      } else if (percent >= 100) {
+        petAvatar.innerText = "🥳";
+      } else {
+        petAvatar.innerText = "🐱";
+      }
+
+      // Stats
+      levelDisplay.innerText = `Level ${level} Companion`;
+      streakText.innerText = `${streak} days`;
+    }
+
+    function logMessage(msg) {
+      logBox.innerText = msg;
+    }
+
+    function drinkWater(amount) {
+      currentWater += amount;
+      petEnergy = Math.min(100, petEnergy + 15);
+      triggerBounce();
+
+      if (currentWater >= dailyGoal && (currentWater - amount) < dailyGoal) {
+        level += 1;
+        streak += 1;
+        petEnergy = 100;
+        logMessage(`🎉 Goal reached! ${petName} reached Level ${level} and streak is now ${streak}!`);
+      } else {
+        logMessage(`Gulp! Added ${amount} ml. ${petName} feels refreshed (+15% energy).`);
+      }
+
+      updateUI();
+    }
+
+    function passTime() {
+      petEnergy = Math.max(0, petEnergy - 20);
+      if (petEnergy === 0) {
+        logMessage(`⚠️ ${petName} is dehydrated! Drink some water soon!`);
+      } else {
+        logMessage(`⏳ Time passes... ${petName} gets thirsty (-20% energy).`);
+      }
+      updateUI();
+    }
+
+    function resetDay() {
+      if (currentWater < dailyGoal) {
+        streak = 0;
+        petEnergy = Math.max(10, petEnergy - 30);
+        logMessage(`🌅 Missed yesterday's target. Streak reset to 0.`);
+      } else {
+        logMessage(`🌅 A fresh day begins! Keep the momentum going.`);
+      }
+      currentWater = 0;
+      updateUI();
+    }
+
+    // Initialize UI
+    updateUI();
+  </script>
+</body>
+</html>
