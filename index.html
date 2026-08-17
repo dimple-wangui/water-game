@@ -1,304 +1,422 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hydration Hero 🥤🐾</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #38bdf8;
-      --accent-hover: #0284c7;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --energy: #22c55e;
-      --warning: #ef4444;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hydration Hero 🥤🐾</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --grad-1:#FDEBFF;
+    --grad-2:#E3F6FF;
+    --grad-3:#FFF6E0;
+    --card-bg:#FFFFFF;
+    --ink:#4A4063;
+    --ink-soft:#8B85A6;
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
+    --blue:#AEE3F7;      --blue-deep:#5FB3DE;
+    --pink:#FFD1E8;      --pink-deep:#F17FB8;
+    --mint:#C7F5DA;      --mint-deep:#4FCB88;
+    --yellow:#FFF0B3;    --yellow-deep:#F4C742;
+    --peach:#FFD3C4;     --peach-deep:#F4906B;
+    --lavender:#E4D6FF;  --lavender-deep:#B18CF0;
+  }
 
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
+  *{ box-sizing:border-box; margin:0; padding:0; font-family:'Quicksand', sans-serif; }
+  h1,h2,#level-display,#pet-stage-display{ font-family:'Baloo 2', sans-serif; }
 
-    .card {
-      background-color: var(--card-bg);
-      border-radius: 16px;
-      padding: 28px;
-      width: 100%;
-      max-width: 440px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+  body{
+    min-height:100vh;
+    display:flex; justify-content:center; align-items:center;
+    padding:24px;
+    color:var(--ink);
+    overflow:hidden;
+    position:relative;
+    background:linear-gradient(120deg,var(--grad-1),var(--grad-2),var(--grad-3));
+    background-size:200% 200%;
+    animation:bgShift 16s ease-in-out infinite;
+  }
+  @keyframes bgShift{
+    0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;}
+  }
 
-    .header {
-      text-align: center;
-    }
+  .blob{ position:fixed; border-radius:50%; filter:blur(50px); opacity:.55; z-index:0; }
+  .blob1{ width:260px; height:260px; background:var(--pink); top:-60px; left:-60px; animation:floatBlob 12s ease-in-out infinite; }
+  .blob2{ width:300px; height:300px; background:var(--blue); bottom:-80px; right:-80px; animation:floatBlob 14s ease-in-out infinite reverse; }
+  .blob3{ width:200px; height:200px; background:var(--yellow); bottom:20%; left:-60px; animation:floatBlob 10s ease-in-out infinite; }
+  @keyframes floatBlob{ 0%,100%{ transform:translateY(0) translateX(0); } 50%{ transform:translateY(-25px) translateX(20px); } }
 
-    .header h1 {
-      font-size: 1.5rem;
-      color: var(--accent);
-    }
+  .card{
+    position:relative; z-index:1;
+    background:var(--card-bg);
+    border-radius:28px;
+    padding:30px;
+    width:100%; max-width:440px;
+    box-shadow:0 24px 48px -18px rgba(140,120,200,0.38), 0 2px 0 rgba(255,255,255,0.6) inset;
+    display:flex; flex-direction:column; gap:18px;
+  }
 
-    .pet-display {
-      text-align: center;
-      padding: 16px 0;
-      background: rgba(255,255,255,0.03);
-      border-radius: 12px;
-    }
+  .header{ text-align:center; }
+  .header h1{ font-size:1.6rem; color:var(--pink-deep); letter-spacing:.3px; }
+  .header .tagline{ color:var(--ink-soft); font-size:.85rem; margin-top:2px; }
 
-    .pet-avatar {
-      font-size: 3.5rem;
-      margin-bottom: 8px;
-      transition: transform 0.2s ease;
-    }
+  .name-row{ display:flex; flex-direction:column; align-items:center; gap:2px; }
+  #pet-name-input{
+    text-align:center; font-family:'Baloo 2', sans-serif; font-size:1.15rem; font-weight:700;
+    color:var(--ink); border:2px solid transparent; background:var(--lavender);
+    border-radius:12px; padding:6px 14px; width:70%; transition:border-color .2s, background .2s;
+  }
+  #pet-name-input:hover{ background:#EFE4FF; }
+  #pet-name-input:focus{ outline:none; border-color:var(--lavender-deep); background:#fff; }
+  .edit-hint{ font-size:.7rem; color:var(--ink-soft); }
 
-    .pet-avatar.bounce {
-      transform: scale(1.2);
-    }
+  .pet-stage{ text-align:center; font-size:.95rem; font-weight:700; color:var(--mint-deep); }
 
-    .stats-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
+  .pet-display{
+    position:relative; min-height:170px;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(180deg, rgba(174,227,247,0.25), rgba(255,209,232,0.2));
+    border-radius:20px; overflow:hidden;
+  }
+  .bubble{ position:absolute; bottom:-20px; border-radius:50%; background:rgba(255,255,255,0.55); animation:rise linear infinite; }
+  .b1{ width:14px; height:14px; left:18%; animation-duration:5s; }
+  .b2{ width:10px; height:10px; left:55%; animation-duration:6.5s; animation-delay:1s; }
+  .b3{ width:18px; height:18px; left:75%; animation-duration:7.5s; animation-delay:2s; }
+  .b4{ width:8px; height:8px; left:35%; animation-duration:4.5s; animation-delay:.5s; }
+  @keyframes rise{ 0%{ transform:translateY(0) scale(1); opacity:.9; } 100%{ transform:translateY(-190px) scale(1.3); opacity:0; } }
 
-    .progress-bar-container {
-      background: #334155;
-      height: 14px;
-      border-radius: 7px;
-      overflow: hidden;
-      margin-bottom: 12px;
-    }
+  .glow-ring{
+    position:absolute; width:130px; height:130px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0) 70%);
+    filter:blur(4px);
+  }
+  .glow-ring.radiant{
+    background:conic-gradient(var(--pink), var(--yellow), var(--mint), var(--blue), var(--lavender), var(--pink));
+    animation:spinGlow 4s linear infinite;
+    opacity:.75;
+  }
+  @keyframes spinGlow{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
 
-    .progress-bar {
-      height: 100%;
-      background: var(--accent);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
+  .pet-avatar-wrap{ position:relative; z-index:1; }
+  .pet-avatar-wrap.bounce{ animation:bouncePulse .35s ease; }
+  @keyframes bouncePulse{
+    0%{ transform:scale(1) rotate(0); }
+    40%{ transform:scale(1.18) rotate(-5deg); }
+    70%{ transform:scale(0.95) rotate(4deg); }
+    100%{ transform:scale(1) rotate(0); }
+  }
+  .pet-avatar{
+    font-size:4.4rem; display:inline-block;
+    transition:transform .5s cubic-bezier(.68,-0.55,.27,1.55), filter .3s ease;
+  }
+  .pet-avatar.tired{ filter:grayscale(0.55) opacity(0.9); }
+  .pet-avatar.radiant{ filter:drop-shadow(0 0 14px var(--yellow-deep)); }
 
-    .energy-bar {
-      background: var(--energy);
-      transition: width 0.3s ease, background 0.3s ease;
-    }
+  .level-badge{
+    align-self:center; font-size:.85rem; font-weight:700; color:#fff;
+    background:linear-gradient(120deg, var(--lavender-deep), var(--pink-deep));
+    padding:4px 14px; border-radius:999px;
+  }
 
-    .log-box {
-      background: #0f172a;
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 0.85rem;
-      min-height: 50px;
-      max-height: 80px;
-      overflow-y: auto;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
+  .stat-block{ display:flex; flex-direction:column; gap:4px; }
+  .stats-row{ display:flex; justify-content:space-between; font-size:.85rem; color:var(--ink-soft); font-weight:600; }
+  .progress-bar-container{ background:#F1EDFB; height:16px; border-radius:8px; overflow:hidden; position:relative; }
+  .progress-bar{ height:100%; width:0%; border-radius:8px; transition:width .4s ease; position:relative; overflow:hidden; }
+  .progress-bar::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%);
+    background-size:200% 100%; animation:shine 2.4s linear infinite;
+  }
+  @keyframes shine{ 0%{ background-position:200% 0; } 100%{ background-position:-200% 0; } }
+  .water-bar{ background:linear-gradient(90deg, var(--blue), var(--blue-deep)); }
+  .water-bar.overflow{ background:linear-gradient(90deg, var(--yellow-deep), var(--pink-deep)); }
+  .energy-bar{ background:linear-gradient(90deg, var(--mint), var(--mint-deep)); }
+  .energy-bar.low{ background:linear-gradient(90deg, var(--peach), var(--peach-deep)); }
 
-    .btn-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+  .streak-row{ display:flex; align-items:center; gap:6px; justify-content:center; margin-top:2px; }
+  #streak-flame{ transition:font-size .3s ease; }
+  #streak-count{ font-weight:700; color:var(--peach-deep); font-size:.9rem; }
 
-    button {
-      background-color: var(--accent);
-      color: #0f172a;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      padding: 12px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: background-color 0.2s, transform 0.1s;
-    }
+  .log-box{
+    position:relative; background:var(--lavender); border-radius:16px 16px 16px 4px;
+    padding:12px 16px; font-size:.85rem; min-height:44px; display:flex; align-items:center;
+    color:var(--ink); font-weight:600; text-align:left;
+  }
 
-    button:hover {
-      background-color: var(--accent-hover);
-      color: #fff;
-    }
+  .btn-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .btn-grid .wide-row{ grid-column:1 / -1; display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 
-    button:active {
-      transform: scale(0.98);
-    }
+  button{
+    border:none; border-radius:14px; padding:12px 6px; font-size:.85rem; font-weight:700;
+    color:#5a4a3a; cursor:pointer; transition:transform .12s ease, filter .2s ease; font-family:'Quicksand',sans-serif;
+  }
+  button:hover{ filter:brightness(1.06); transform:translateY(-2px); }
+  button:active{ transform:scale(0.96) translateY(0); }
+  button:focus-visible{ outline:3px solid var(--lavender-deep); outline-offset:2px; }
 
-    button.secondary {
-      background-color: #334155;
-      color: var(--text);
-    }
+  .btn-pink{ background:linear-gradient(160deg, var(--pink), var(--pink-deep)); color:#5a2f47; }
+  .btn-blue{ background:linear-gradient(160deg, var(--blue), var(--blue-deep)); color:#20475a; }
+  .btn-mint{ background:linear-gradient(160deg, var(--mint), var(--mint-deep)); color:#1f4d38; }
+  .btn-peach{ background:linear-gradient(160deg, var(--peach), var(--peach-deep)); color:#5a2f1f; }
+  .btn-lavender{ background:linear-gradient(160deg, var(--lavender), var(--lavender-deep)); color:#3a2a5a; }
 
-    button.secondary:hover {
-      background-color: #475569;
+  #confetti-layer{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:999; }
+  .confetti-piece{ position:absolute; top:-8%; animation:confettiFall 2.1s ease-in forwards; }
+  @keyframes confettiFall{
+    0%{ transform:translateY(0) rotate(0deg); opacity:1; }
+    100%{ transform:translateY(115vh) rotate(360deg); opacity:0; }
+  }
+
+  .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;
     }
-  </style>
+  }
+</style>
 </head>
 <body>
+
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+  <div id="confetti-layer"></div>
 
   <div class="card">
     <div class="header">
       <h1>Hydration Hero 🥤</h1>
-      <p id="pet-title" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Meet your hydration pet!</p>
+      <p class="tagline">Sip by sip, watch your buddy grow ✨</p>
     </div>
 
-    <div class="pet-display">
-      <div id="pet-avatar" class="pet-avatar">🐱</div>
-      <h2 id="pet-name-display">Hydro</h2>
-      <p id="level-display" style="font-size: 0.85rem; color: var(--accent);">Level 1 Companion</p>
+    <div class="name-row">
+      <label for="pet-name-input" class="sr-only">Pet name</label>
+      <input id="pet-name-input" type="text" value="Hydro" maxlength="14" />
+      <span class="edit-hint">✏️ tap the name to rename your pet</span>
     </div>
 
-    <div>
+    <div class="pet-stage" id="pet-stage-display">Egg</div>
+
+    <div class="pet-display" id="pet-display">
+      <div class="bubble b1"></div>
+      <div class="bubble b2"></div>
+      <div class="bubble b3"></div>
+      <div class="bubble b4"></div>
+      <div class="glow-ring" id="glow-ring"></div>
+      <div class="pet-avatar-wrap" id="pet-avatar-wrap">
+        <div class="pet-avatar" id="pet-avatar">🥚</div>
+      </div>
+    </div>
+
+    <div class="level-badge" id="level-display">Level 1</div>
+
+    <div class="stat-block">
       <div class="stats-row">
         <span>💧 Daily Water</span>
         <span id="water-text">0 / 2000 ml (0%)</span>
       </div>
       <div class="progress-bar-container">
-        <div id="water-bar" class="progress-bar"></div>
+        <div id="water-bar" class="progress-bar water-bar"></div>
       </div>
+    </div>
 
+    <div class="stat-block">
       <div class="stats-row">
         <span>⚡ Pet Energy</span>
         <span id="energy-text">100%</span>
       </div>
       <div class="progress-bar-container">
-        <div id="energy-bar" class="progress-bar energy-bar" style="width: 100%;"></div>
-      </div>
-
-      <div class="stats-row" style="margin-top: 8px;">
-        <span>🔥 Current Streak</span>
-        <span id="streak-text" style="color: #fbbf24; font-weight: 600;">0 days</span>
+        <div id="energy-bar" class="progress-bar energy-bar" style="width:100%;"></div>
       </div>
     </div>
 
-    <div id="log-box" class="log-box">
-      Welcome! Log water intake to keep your pet energetic and healthy.
+    <div class="streak-row">
+      <span id="streak-flame">🔥</span>
+      <span id="streak-count">0 days</span>
+    </div>
+
+    <div id="log-box" class="log-box" role="status" aria-live="polite">
+      Welcome! Log water intake to keep your pet energetic and growing 🌱
     </div>
 
     <div class="btn-grid">
-      <button onclick="drinkWater(250)">+250 ml 🥤</button>
-      <button onclick="drinkWater(500)">+500 ml 💧</button>
-      <button class="secondary" onclick="passTime()">Wait (Pass Time) ⏳</button>
-      <button class="secondary" onclick="resetDay()">New Day 🌅</button>
+      <button class="btn-pink" onclick="drinkWater(100)">+100 ml 💧</button>
+      <button class="btn-blue" onclick="drinkWater(250)">+250 ml 🥤</button>
+      <button class="btn-mint" onclick="drinkWater(500)">+500 ml 🌊</button>
+      <div class="wide-row">
+        <button class="btn-peach" onclick="passTime()">Wait ⏳</button>
+        <button class="btn-lavender" onclick="resetDay()">New Day 🌅</button>
+      </div>
     </div>
   </div>
 
-  <script>
-    // Game State
-    let petName = prompt("Name your hydration pet:", "Hydro") || "Hydro";
-    let level = 1;
-    let streak = 0;
-    let petEnergy = 100;
-    let currentWater = 0;
-    const dailyGoal = 2000;
+<script>
+  // ---- State ----
+  let petName = "Hydro";
+  let level = 1;
+  let streak = 0;
+  let petEnergy = 100;
+  let currentWater = 0;
+  const dailyGoal = 2000;
 
-    // Elements
-    const petNameDisplay = document.getElementById("pet-name-display");
-    const levelDisplay = document.getElementById("level-display");
-    const waterText = document.getElementById("water-text");
-    const waterBar = document.getElementById("water-bar");
-    const energyText = document.getElementById("energy-text");
-    const energyBar = document.getElementById("energy-bar");
-    const streakText = document.getElementById("streak-text");
-    const logBox = document.getElementById("log-box");
-    const petAvatar = document.getElementById("pet-avatar");
+  // ---- Elements ----
+  const petNameInput   = document.getElementById("pet-name-input");
+  const petStageDisplay= document.getElementById("pet-stage-display");
+  const levelDisplay   = document.getElementById("level-display");
+  const waterText      = document.getElementById("water-text");
+  const waterBar       = document.getElementById("water-bar");
+  const energyText     = document.getElementById("energy-text");
+  const energyBar      = document.getElementById("energy-bar");
+  const streakFlame    = document.getElementById("streak-flame");
+  const streakCount    = document.getElementById("streak-count");
+  const logBox         = document.getElementById("log-box");
+  const petAvatar       = document.getElementById("pet-avatar");
+  const petAvatarWrap   = document.getElementById("pet-avatar-wrap");
+  const glowRing        = document.getElementById("glow-ring");
+  const confettiLayer   = document.getElementById("confetti-layer");
 
-    petNameDisplay.innerText = petName;
+  petNameInput.addEventListener("input", () => {
+    petName = petNameInput.value.trim() || "Hydro";
+  });
 
-    function triggerBounce() {
-      petAvatar.classList.add("bounce");
-      setTimeout(() => petAvatar.classList.remove("bounce"), 200);
+  // ---- Growth stages ----
+  const STAGES = [
+    { min: 0,   emoji: "🥚", label: "Egg" },
+    { min: 15,  emoji: "🐣", label: "Hatchling" },
+    { min: 35,  emoji: "🐱", label: "Kitten" },
+    { min: 55,  emoji: "😺", label: "Cat" },
+    { min: 75,  emoji: "😻", label: "Big Cat" },
+    { min: 95,  emoji: "🦁", label: "Almost There!" },
+    { min: 100, emoji: "🐉", label: "Dragon Mode!" }
+  ];
+
+  function getStage(percent){
+    let current = STAGES[0];
+    for (const s of STAGES){ if (percent >= s.min) current = s; }
+    return current;
+  }
+
+  function computeScale(percent, streakDays){
+    const base = 0.65 + (Math.min(percent, 100) / 100) * 0.85; // 0.65 -> 1.5
+    const streakBonus = percent >= 100 ? Math.min(streakDays * 0.03, 0.3) : 0;
+    return Math.min(base + streakBonus, 1.9);
+  }
+
+  // ---- Message pools ----
+  const sipMessages = [
+    (n,p) => `Glug glug! +${n} ml down the hatch. ${p} wiggles happily!`,
+    (n,p) => `${p} slurps up ${n} ml and does a little dance! 💃`,
+    (n,p) => `Splash! +${n} ml logged. ${p} feels bubbly! 🫧`,
+    (n,p) => `+${n} ml down. ${p} grows just a little bigger! 🌱`
+  ];
+  const waitMessages = [
+    p => `⏳ Time passes... ${p} gets a bit thirsty.`,
+    p => `😌 ${p} is patiently waiting for the next sip.`,
+    p => `🕰️ Tick tock — ${p}'s energy is dipping.`
+  ];
+
+  function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function triggerBounce(){
+    petAvatarWrap.classList.add("bounce");
+    setTimeout(() => petAvatarWrap.classList.remove("bounce"), 350);
+  }
+
+  function spawnConfetti(){
+    const emojis = ["✨","🎉","💧","🌟","🎊","💫"];
+    for (let i = 0; i < 26; i++){
+      const span = document.createElement("span");
+      span.className = "confetti-piece";
+      span.textContent = pick(emojis);
+      span.style.left = Math.random() * 100 + "%";
+      span.style.animationDelay = (Math.random() * 0.4) + "s";
+      span.style.fontSize = (14 + Math.random() * 16) + "px";
+      confettiLayer.appendChild(span);
+      setTimeout(() => span.remove(), 2300);
+    }
+  }
+
+  function logMessage(msg){
+    logBox.innerText = msg;
+  }
+
+  function updateUI(){
+    const rawPercent = (currentWater / dailyGoal) * 100;
+    const displayPercent = Math.round(rawPercent);
+    const cappedPercent = Math.min(displayPercent, 100);
+
+    waterText.innerText = `${currentWater} / ${dailyGoal} ml (${displayPercent}%)`;
+    waterBar.style.width = `${cappedPercent}%`;
+    waterBar.classList.toggle("overflow", displayPercent >= 100);
+
+    energyText.innerText = `${petEnergy}%`;
+    energyBar.style.width = `${petEnergy}%`;
+    energyBar.classList.toggle("low", petEnergy <= 25);
+
+    const stage = getStage(cappedPercent);
+    petStageDisplay.innerText = stage.label;
+
+    const isGoalMet = displayPercent >= 100;
+    glowRing.classList.toggle("radiant", isGoalMet);
+    petAvatar.classList.toggle("radiant", isGoalMet);
+
+    petAvatar.innerText = petEnergy <= 0 ? "😵" : stage.emoji;
+    petAvatar.classList.toggle("tired", petEnergy > 0 && petEnergy <= 25);
+
+    const scale = computeScale(cappedPercent, streak);
+    petAvatar.style.transform = `scale(${scale})`;
+
+    levelDisplay.innerText = `Level ${level}`;
+    streakCount.innerText = `${streak} day${streak === 1 ? "" : "s"}`;
+    streakFlame.style.fontSize = (1 + Math.min(streak, 6) * 0.08) + "em";
+  }
+
+  function drinkWater(amount){
+    const oldPercent = (currentWater / dailyGoal) * 100;
+    currentWater += amount;
+    const newPercent = (currentWater / dailyGoal) * 100;
+    petEnergy = Math.min(100, petEnergy + 15);
+    triggerBounce();
+
+    if (newPercent >= 100 && oldPercent < 100){
+      level += 1;
+      streak += 1;
+      petEnergy = 100;
+      spawnConfetti();
+      logMessage(`🎉 ${petName} evolved into Dragon Mode! Goal smashed — streak is now ${streak} day${streak === 1 ? "" : "s"}!`);
+    } else {
+      logMessage(pick(sipMessages)(amount, petName));
     }
 
-    function updateUI() {
-      // Water Calculation
-      const percent = Math.min(100, Math.round((currentWater / dailyGoal) * 100));
-      waterText.innerText = `${currentWater} / ${dailyGoal} ml (${percent}%)`;
-      waterBar.style.width = `${percent}%`;
-
-      // Energy Calculation
-      energyText.innerText = `${petEnergy}%`;
-      energyBar.style.width = `${petEnergy}%`;
-      energyBar.style.background = petEnergy <= 25 ? "var(--warning)" : "var(--energy)";
-
-      // Pet Face based on status
-      if (petEnergy <= 0) {
-        petAvatar.innerText = "😵";
-      } else if (petEnergy <= 30) {
-        petAvatar.innerText = "🥺";
-      } else if (percent >= 100) {
-        petAvatar.innerText = "🥳";
-      } else {
-        petAvatar.innerText = "🐱";
-      }
-
-      // Stats
-      levelDisplay.innerText = `Level ${level} Companion`;
-      streakText.innerText = `${streak} days`;
-    }
-
-    function logMessage(msg) {
-      logBox.innerText = msg;
-    }
-
-    function drinkWater(amount) {
-      currentWater += amount;
-      petEnergy = Math.min(100, petEnergy + 15);
-      triggerBounce();
-
-      if (currentWater >= dailyGoal && (currentWater - amount) < dailyGoal) {
-        level += 1;
-        streak += 1;
-        petEnergy = 100;
-        logMessage(`🎉 Goal reached! ${petName} reached Level ${level} and streak is now ${streak}!`);
-      } else {
-        logMessage(`Gulp! Added ${amount} ml. ${petName} feels refreshed (+15% energy).`);
-      }
-
-      updateUI();
-    }
-
-    function passTime() {
-      petEnergy = Math.max(0, petEnergy - 20);
-      if (petEnergy === 0) {
-        logMessage(`⚠️ ${petName} is dehydrated! Drink some water soon!`);
-      } else {
-        logMessage(`⏳ Time passes... ${petName} gets thirsty (-20% energy).`);
-      }
-      updateUI();
-    }
-
-    function resetDay() {
-      if (currentWater < dailyGoal) {
-        streak = 0;
-        petEnergy = Math.max(10, petEnergy - 30);
-        logMessage(`🌅 Missed yesterday's target. Streak reset to 0.`);
-      } else {
-        logMessage(`🌅 A fresh day begins! Keep the momentum going.`);
-      }
-      currentWater = 0;
-      updateUI();
-    }
-
-    // Initialize UI
     updateUI();
-  </script>
+  }
+
+  function passTime(){
+    petEnergy = Math.max(0, petEnergy - 20);
+    if (petEnergy === 0){
+      logMessage(`⚠️ ${petName} is dehydrated! Drink some water soon!`);
+    } else {
+      logMessage(pick(waitMessages)(petName));
+    }
+    updateUI();
+  }
+
+  function resetDay(){
+    if (currentWater < dailyGoal){
+      streak = 0;
+      petEnergy = Math.max(10, petEnergy - 30);
+      logMessage(`🌅 Missed yesterday's goal. ${petName} is back to an egg — streak reset to 0.`);
+    } else {
+      logMessage(`🌅 A fresh day begins! ${petName} is ready for a new adventure.`);
+    }
+    currentWater = 0;
+    updateUI();
+  }
+
+  // ---- Init ----
+  updateUI();
+</script>
 </body>
 </html>
